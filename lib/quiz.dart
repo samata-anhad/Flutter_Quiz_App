@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/questions_screen.dart';
 import 'package:test_app/start_Screen.dart';
+import 'package:test_app/data/questions.dart';
+import 'package:test_app/results_screen.dart';
 
 class Quiz extends StatefulWidget {
   const Quiz({super.key});
@@ -26,7 +28,7 @@ class _QuizState extends State<Quiz> {
   // }
 
   //alternate method(tertiary Insted Of Using Initial State For Addressing Null To It)
-
+  List<String> selectedAnswers = []; //store the selected answers here, we remove the final as after rub out of question the state again comes to empty list of answers
   var activeScreen = 'start-screen';
 
   void switchScreen() {
@@ -35,12 +37,27 @@ class _QuizState extends State<Quiz> {
     });
   }
 
+  void chooseAnswers(String answers) {
+    selectedAnswers.add(answers); // It is a methiod which will add the values of list (selected answers without reassiging variable)
+
+    if (selectedAnswers.length == questions.length) {
+      setState(() {
+        selectedAnswers = [];
+        activeScreen = 'result-screen';
+      });
+    }
+  }
+
   @override
   Widget build(context) {
-   Widget screenWidget =StartScreen(switchScreen );
+    Widget screenWidget = StartScreen(switchScreen);
 
-    if(activeScreen=='QuestionsScreen'){
-   screenWidget=const QuestionsScreen();
+    if (activeScreen == 'QuestionsScreen') {
+      screenWidget = QuestionsScreen(onSelectAnswer: chooseAnswers);
+    }
+
+    if (activeScreen == 'ResultsScreen') {
+      screenWidget =  ResultsScreen(choosenAnswer: selectedAnswers);
     }
 
     return MaterialApp(
@@ -61,9 +78,7 @@ class _QuizState extends State<Quiz> {
           // child: activeScreen == 'startScreen'
           //     ? StartScreen(switchScreen)
           //     : const QuestionsScreen(),
-
-
-               child: screenWidget
+          child: screenWidget,
         ),
       ),
     );
